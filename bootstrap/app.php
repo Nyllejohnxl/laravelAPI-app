@@ -21,7 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/*', 
         ]);
 
-
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
