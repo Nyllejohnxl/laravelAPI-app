@@ -14,6 +14,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Seed users first
-        $this->call(UserSeeder::class);
+        $this->call([
+            UserSeeder::class,
+            ProtocolSeeder::class,
+            ThreadSeeder::class,
+            CommentSeeder::class,
+            ReviewSeeder::class,
+            VoteSeeder::class,
+        ]);
     }
 }

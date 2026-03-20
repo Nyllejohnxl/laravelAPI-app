@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ProtocolController;
+use App\Http\Controllers\ThreadController;
 use App\Http\Middleware\CorsMiddleware;
 
 // Test endpoint
@@ -26,4 +28,17 @@ Route::middleware(['auth:sanctum', CorsMiddleware::class])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+});
+
+// Public API routes for discussions (no auth required)
+Route::middleware([CorsMiddleware::class])->group(function () {
+    // Protocols
+    Route::get('/protocols', [ProtocolController::class, 'index']);
+    Route::get('/protocols/{id}', [ProtocolController::class, 'show']);
+    Route::get('/protocols/status/{status}', [ProtocolController::class, 'getByStatus']);
+    
+    // Threads
+    Route::get('/threads', [ThreadController::class, 'index']);
+    Route::get('/threads/{id}', [ThreadController::class, 'show']);
+    Route::get('/protocols/{protocolId}/threads', [ThreadController::class, 'getByProtocol']);
 });
