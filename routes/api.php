@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProtocolController;
 use App\Http\Controllers\ThreadController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\VoteController;
 use App\Http\Middleware\CorsMiddleware;
 
 // Test endpoint
@@ -41,4 +43,17 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/threads', [ThreadController::class, 'index']);
     Route::get('/threads/{id}', [ThreadController::class, 'show']);
     Route::get('/protocols/{protocolId}/threads', [ThreadController::class, 'getByProtocol']);
+    
+    // Comments (read-only)
+    Route::get('/threads/{threadId}/comments', [CommentController::class, 'getByThread']);
+});
+
+// Protected routes for creating comments and votes
+Route::middleware(['auth:sanctum', CorsMiddleware::class])->group(function () {
+    // Comments
+    Route::post('/threads/{threadId}/comments', [CommentController::class, 'store']);
+    
+    // Votes
+    Route::post('/comments/{commentId}/vote', [VoteController::class, 'store']);
+    Route::delete('/votes/{voteId}', [VoteController::class, 'destroy']);
 });
