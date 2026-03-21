@@ -50,8 +50,17 @@ Route::middleware([CorsMiddleware::class])->group(function () {
 
 // Protected routes for creating comments and votes
 Route::middleware(['auth:sanctum', CorsMiddleware::class])->group(function () {
+    // Protocols
+    Route::post('/protocols', [ProtocolController::class, 'store']);
+
+    // Threads
+    Route::post('/protocols/{protocolId}/threads', [ThreadController::class, 'store']);
+
     // Comments
     Route::post('/threads/{threadId}/comments', [CommentController::class, 'store']);
+    
+    // Reviews
+    Route::post('/threads/{threadId}/reviews', [App\Http\Controllers\ReviewController::class, 'store']);
     
     // Votes
     Route::post('/comments/{commentId}/vote', [VoteController::class, 'store']);

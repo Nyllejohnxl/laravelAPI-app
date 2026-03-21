@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Protocol;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProtocolController extends Controller
 {
@@ -70,5 +71,29 @@ class ProtocolController extends Controller
             ->paginate(10);
 
         return response()->json($protocols);
+    }
+
+    /**
+     * Store a newly created protocol.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $protocol = Protocol::create([
+            'user_id' => auth()->id(),
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'status' => 'Active',
+            'views' => 0,
+        ]);
+
+        return response()->json([
+            'message' => 'Protocol created successfully',
+            'data' => $protocol->load('user')
+        ], 201);
     }
 }

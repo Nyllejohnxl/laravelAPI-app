@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Thread;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ThreadController extends Controller
 {
@@ -53,5 +54,36 @@ class ThreadController extends Controller
             ->paginate(10);
 
         return response()->json($threads);
+    }
+
+    /**
+     * Store a newly created thread in storage.
+     */
+    public function store(Request $request, $protocolId): JsonResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
+
+        $protocol = \App\Models\Protocol::find($protocolId);
+
+        if (!$protocol) {
+            return response()->json(['message' => 'Protocol not found'], 404);
+        }
+
+        $thread = Thread::create([
+            'protocol_id' => $protocolId,
+            'user_id' => auth()->id(),
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'views' => 0,
+            'replies' => 0,
+        ]);
+
+        return response()->json([
+            'message' => 'Thread created successfully',
+            'data' => $thread->load('user')
+        ], 201);
     }
 }
